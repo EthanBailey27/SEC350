@@ -1,0 +1,41 @@
+# docker-compose.yml - LAMP stack (Module 4, Lesson 1)
+# Shared server: my own project name and host port so I can't collide with my partner
+name: ebailey-compose
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myapp
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - lamp-network
+
+  web:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    volumes:
+      - ./php/src:/var/www/html
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: appuser
+      DB_PASSWORD: apppassword
+      DB_NAME: myapp
+    networks:
+      - lamp-network
+
+volumes:
+  db_data:
+
+networks:
+  lamp-network:

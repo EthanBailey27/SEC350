@@ -1,0 +1,35 @@
+#cloud-config
+# cloud-init-server.yaml: Part I, no Docker packages yet
+# Paste the openssl passwd -6 hash you generated into hashed_passwd
+# and the root line below. Keep the $6$ prefix and full hash string.
+# First line MUST be #cloud-config or cloud-init ignores this file.
+hostname: ${hostname}
+fqdn: ${hostname}.local
+
+users:
+  - default
+  - name: ${student_name}
+    gecos: "Student User"
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    groups: users, admin
+    shell: /bin/bash
+    lock_passwd: false
+    hashed_passwd: $6$SlnILLxlxJVkQuft$agykUiDON5oE.lllutyjwMUSY8gOE5gn3nHunh4lg/N89sn6Q2mgXGv/sqI/L83j4WK4uZ33s6sN3CdqEBBew1
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+ssh_pwauth: true
+
+package_update: true
+packages:
+  - openssh-server
+  - curl
+  - wget
+  - vim
+  - git
+  - net-tools
+
+runcmd:
+  - echo 'root:$6$SlnILLxlxJVkQuft$agykUiDON5oE.lllutyjwMUSY8gOE5gn3nHunh4lg/N89sn6Q2mgXGv/sqI/L83j4WK4uZ33s6sN3CdqEBBew1' | chpasswd -e
+  - systemctl restart sshd
+  - echo "${hostname} - SYS-350 Enterprise VM" > /etc/motd

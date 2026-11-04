@@ -45,7 +45,8 @@ variable "student_name" {
 }
 
 resource "aws_s3_bucket" "website" {
-  bucket = "${var.student_name}-course-website"
+  bucket        = "${var.student_name}-course-website"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_versioning" "website" {
@@ -71,6 +72,7 @@ resource "aws_s3_object" "index" {
   source       = "${path.module}/site/index.html"
   source_hash  = filemd5("${path.module}/site/index.html")
   content_type = "text/html"
+  depends_on   = [aws_s3_bucket_versioning.website]
 }
 
 resource "aws_s3_object" "error" {
@@ -79,6 +81,7 @@ resource "aws_s3_object" "error" {
   source       = "${path.module}/site/error.html"
   source_hash  = filemd5("${path.module}/site/error.html")
   content_type = "text/html"
+  depends_on   = [aws_s3_bucket_versioning.website]
 }
 
 resource "aws_dynamodb_table" "items" {

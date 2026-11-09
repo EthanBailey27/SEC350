@@ -1,0 +1,16 @@
+name: ebailey-floci
+services:
+  floci:
+    image: floci/floci:latest
+    container_name: ebailey-floci
+    ports:
+      - "127.0.0.1:4567:4566"
+      - "127.0.0.1:7002:7002"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - FLOCI_SERVICES_UI_ENABLED=false
+      - FLOCI_DOCKER_RESOURCE_NAMESPACE=ebailey
+      - FLOCI_SERVICES_RDS_PROXY_BASE_PORT=7002
+      - FLOCI_SERVICES_EC2_SSH_PORT_RANGE_START=2300
+      - FLOCI_SERVICES_EC2_SSH_PORT_RANGE_END=2399
